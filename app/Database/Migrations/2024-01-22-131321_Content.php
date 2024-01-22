@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class Main extends Migration
+class Content extends Migration
 {
     public function up()
     {
@@ -13,31 +13,15 @@ class Main extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 36,
             ],
-            'anchor' => [
+            'id_main' => [
                 'type' => 'VARCHAR',
-                'constraint' => 255,
+                'constraint' => 36,
             ],
-            'title' => [
+            'id_header' => [
                 'type' => 'VARCHAR',
-                'constraint' => 255,
+                'constraint' => 36,
             ],
-            'img' => [
-                'type' => 'VARCHAR',
-                'constraint' => 100,
-            ],
-            'img_ref' => [
-                'type' => 'VARCHAR',
-                'constraint' => 255,
-            ],
-            'desc' => [
-                'type' => 'VARCHAR',
-                'constraint' => 500,
-            ],
-            'keywords' => [
-                'type' => 'VARCHAR',
-                'constraint' => 255,
-            ],
-            'description' => [
+            'content' => [
                 'type' => 'TEXT',
             ],
             'created_at' => [
@@ -52,11 +36,15 @@ class Main extends Migration
             ],
         ]);
         $this->forge->addKey('id', TRUE);
-        $this->forge->createTable('main');
+        $this->forge->addKey('id_main');
+        $this->forge->addKey('id_header');
+        $this->forge->addForeignKey('id_main', 'main', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('id_header', 'content_header', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('content');
     }
 
     public function down()
     {
-        $this->forge->dropTable('main');
+        $this->forge->dropTable('content');
     }
 }
