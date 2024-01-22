@@ -1,0 +1,59 @@
+on:
+  push:
+    branches:
+      - master
+name: 🖥️ Auto-deploy on Development
+jobs:
+  sync_files:
+    environment: development
+    name: 📂 Sync files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: FTP upload
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.server1 }}
+          username: ${{ secrets.ftp_username2 }}
+          password: ${{ secrets.ftp_password }}
+          server-dir: ${{ secrets.server_dir }}
+
+  create_supporting_file:
+    environment: development
+    needs: sync_files
+    name: ⚙️ Create support file
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create htaccess, index, env file, and install dependencies
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.server1 }}
+          username: ${{ secrets.ssh_username }}
+          password: ${{ secrets.ssh_password }}
+          port: ${{ secrets.ssh_port }}
+          script: cd ${{ secrets.path_domain2 }}${{ secrets.server_dir }} &&
+            cp -n public/.htaccess . &&
+            chmod -R 777 . &&
+            if stat index.php;
+            then echo "File exists";
+            else touch index.php &&
+            truncate -s 0 index.php &&
+            echo "<?php" >> index.php &&
+            echo "include('public/index.php');" >> index.php;
+            fi &&
+            touch .env &&
+            truncate -s 0 .env &&
+            echo "CI_ENVIRONMENT = development" >> .env &&
+            echo "secret.key = ${{ secrets.env_key }}" >> .env &&
+            echo "database.default.hostname = localhost" >> .env &&
+            echo "database.default.database = ${{ secrets.env_database }}" >> .env &&
+            echo "database.default.username = ${{ secrets.env_username }}" >> .env &&
+            echo "database.default.password = ${{ secrets.env_password }}" >> .env &&
+            echo "database.default.DBDriver = MySQLi" >> .env &&
+            echo "database.default.DBPrefix = " >> .env &&
+            echo "database.default.port = 3306" >> .env &&
+            php spark migrate &&
+            php ./composer.phar install &&
+            chmod -R 755 .
