@@ -53,7 +53,7 @@ class MainController extends ResourceController
             $result[$key]['content'] = $this->modelHeader->where('id_main', $value['id'])->orderBy('created_at', 'asc')->findAll();
 
             foreach ($result[$key]['content'] as $k_c => $c) {
-                $result[$key]['content'][$k_c]['content'] = array_column($this->modelContent->where('id_header', $c['id'])->orderBy('created_at', 'asc')->findAll(), 'content');
+                $result[$key]['content'][$k_c]['content'] = $this->modelContent->where('id_header', $c['id'])->orderBy('created_at', 'asc')->findAll();
             }
         }
 
@@ -121,7 +121,7 @@ class MainController extends ResourceController
                 $this->result->Data = $this->model->where('id', $id)->first();
                 $this->result->Data['content'] = $this->modelHeader->where('id_main', $id)->findAll();
                 foreach ($this->result->Data['content'] as $key => $value) {
-                    $this->result->Data['content'][$key]['content'] = array_column($this->modelContent->where('id_header', $value['id'])->findAll(), 'content');
+                    $this->result->Data['content'][$key]['content'] = $this->modelContent->where('id_header', $value['id'])->findAll();
                 }
 
                 return $this->respond($this->result);
