@@ -33,6 +33,8 @@ class MainController extends ResourceController
      */
     protected $result;
 
+    protected $path = "/";
+
     public function __construct()
     {
         $this->model = new Main();
@@ -41,6 +43,10 @@ class MainController extends ResourceController
         $this->result = new Result();
 
         $this->helpers = ['form'];
+
+        if ($_SERVER['SERVER_NAME'] == 'localhost') {
+            $this->path = "\\";
+        }
     }
 
     /**
@@ -105,7 +111,7 @@ class MainController extends ResourceController
                 $img = $this->request->getFile('img');
 
                 if (!$img->hasMoved()) {
-                    $img->move(FCPATH . 'assets\\img', $img->getName());
+                    $img->move(FCPATH . "assets{$this->path}img", $img->getName());
                     $mdata['img'] = $img->getName();
                 }
 
@@ -178,7 +184,7 @@ class MainController extends ResourceController
                 if (isset($img)) {
                     $mdata = [];
                     if (!$img->hasMoved()) {
-                        $img->move(FCPATH . 'assets\\img', $img->getName());
+                        $img->move(FCPATH . "assets{$this->path}img", $img->getName());
                         $mdata['img'] = $img->getName();
                     }
 
