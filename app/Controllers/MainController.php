@@ -150,7 +150,28 @@ class MainController extends ResourceController
      */
     public function update($id = null)
     {
-        //
+        try {
+            if (isset($_GET['id_header'])) {
+                $id_header = $_GET['id_header'];
+                $this->modelHeader->update($id_header, $this->request->getJSON());
+
+                $this->result->Data = $this->modelHeader->where('id', $id_header)->first();
+            } else if (isset($_GET['id_content'])) {
+                $id_content = $_GET['id_content'];
+                $this->modelContent->update($id_content, $this->request->getJSON());
+
+                $this->result->Data = $this->modelContent->where('id', $id_content)->first();
+            } else {
+                $this->model->update($id, $this->request->getJSON());
+
+                $this->result->Data = $this->model->where('id', $id)->first();
+            }
+            $this->result->Message = 'Berhasil Diubah';
+
+            return $this->respond($this->result);
+        } catch (\Throwable $th) {
+            return $this->failForbidden($th->getMessage());
+        }
     }
 
     /**
