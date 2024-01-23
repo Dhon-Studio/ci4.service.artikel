@@ -50,7 +50,7 @@ class MainController extends ResourceController
      */
     public function index()
     {
-        $result = $this->model->findAll();
+        $result = $this->model->orderBy('created_at', 'asc')->findAll();
 
         foreach ($result as $key => $value) {
             $result[$key]['content'] = $this->modelHeader->where('id_main', $value['id'])->orderBy('created_at', 'asc')->findAll();
