@@ -6,6 +6,7 @@ use App\Models\Content;
 use App\Models\ContentHeader;
 use App\Models\Main;
 use App\Models\Result;
+use CodeIgniter\Files\File;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 use Ramsey\Uuid\Uuid;
@@ -38,6 +39,8 @@ class MainController extends ResourceController
         $this->modelHeader = new ContentHeader();
         $this->modelContent = new Content();
         $this->result = new Result();
+
+        $this->helpers = ['form'];
     }
 
     /**
@@ -98,6 +101,14 @@ class MainController extends ResourceController
                 $mdata['id'] = Uuid::uuid4();
                 unset($mdata['header']);
                 unset($mdata['content']);
+
+                $img = $this->request->getFile('img');
+
+                if (!$img->hasMoved()) {
+                    $img->move(FCPATH . 'assets\\img', $img->getName());
+                    $mdata['img'] = $img->getName();
+                }
+
                 $id = $this->model->insert($mdata);
 
                 foreach (explode(';', $post['header']) as $k_h => $h) {
