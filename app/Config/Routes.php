@@ -7,6 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 
 $routes->post('main', 'MainController::create', ['filter' => 'auth']);
+$routes->post('main/upload/(:any)', 'MainController::update/$1', ['filter' => 'auth']);
 $routes->put('main/(:any)', 'MainController::update/$1', ['filter' => 'auth']);
 $routes->delete('main/(:any)', 'MainController::delete/$1', ['filter' => 'auth']);
 $routes->resource('main', [

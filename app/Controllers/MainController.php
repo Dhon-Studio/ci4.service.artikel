@@ -50,7 +50,7 @@ class MainController extends ResourceController
      */
     public function index()
     {
-        $result = $this->model->orderBy('created_at', 'asc')->findAll();
+        $result = $this->model->orderBy('created_at', 'desc')->findAll();
 
         foreach ($result as $key => $value) {
             $result[$key]['content'] = $this->modelHeader->where('id_main', $value['id'])->orderBy('created_at', 'asc')->findAll();
@@ -173,7 +173,19 @@ class MainController extends ResourceController
 
                 $this->result->Data = $this->modelContent->where('id', $id_content)->first();
             } else {
-                $this->model->update($id, $this->request->getJSON());
+                $img = $this->request->getFile('img');
+
+                if (isset($img)) {
+                    $mdata = [];
+                    if (!$img->hasMoved()) {
+                        $img->move(FCPATH . 'assets\\img', $img->getName());
+                        $mdata['img'] = $img->getName();
+                    }
+
+                    $this->model->update($id, $mdata);
+                } else {
+                    $this->model->update($id, $this->request->getJSON());
+                }
 
                 $this->result->Data = $this->model->where('id', $id)->first();
             }
